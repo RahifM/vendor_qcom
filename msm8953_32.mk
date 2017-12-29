@@ -59,6 +59,10 @@ $(call inherit-product, device/qcom/common/common.mk)
 PRODUCT_NAME := msm8953_32
 PRODUCT_DEVICE := msm8953_32
 
+# Kernel modules install path
+KERNEL_MODULES_INSTALL := dlkm
+KERNEL_MODULES_OUT := out/target/product/$(PRODUCT_NAME)/$(KERNEL_MODULES_INSTALL)/lib/modules
+
 # When can normal compile this module,  need module owner enable below commands
 # font rendering engine feature switch
 #-include $(QCPATH)/common/config/rendering-engine.mk

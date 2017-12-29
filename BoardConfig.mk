@@ -143,6 +143,12 @@ BOARD_CHARGER_DISABLE_INIT_BLANK := true
 # Add NON-HLOS files for ota upgrade
 ADD_RADIO_FILES ?= true
 
+ifeq ($(TARGET_KERNEL_VERSION), 4.9)
+BOARD_VENDOR_KERNEL_MODULES := \
+        $(KERNEL_MODULES_OUT)/audio_apr.ko \
+        $(KERNEL_MODULES_OUT)/audio_wglink.ko
+endif
+
 # Added to indicate that protobuf-c is supported in this build
 PROTOBUF_SUPPORTED := false
 TARGET_USES_ION := true
