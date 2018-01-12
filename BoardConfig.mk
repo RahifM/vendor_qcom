@@ -137,6 +137,11 @@ endif
 # Enable MDTP During Recovery
 TARGET_USE_MDTP := true
 
+# Enable kaslr seed support
+ifeq ($(TARGET_KERNEL_VERSION), 4.9)
+KASLRSEED_SUPPORT := true
+endif
+
 # Disable the init blank to avoid flicker
 BOARD_CHARGER_DISABLE_INIT_BLANK := true
 
