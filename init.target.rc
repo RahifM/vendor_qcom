@@ -247,10 +247,10 @@ service imsdatadaemon /system/vendor/bin/imsdatadaemon
     group system wifi radio inet log diag
     disabled
 
-service hvdcp_opti /system/bin/hvdcp_opti
+service hvdcp_opti /system/vendor/bin/hvdcp_opti
     class main
     user root
-    group root
+    group system wakelock
 
 on property:vendor.ims.QMI_DAEMON_STATUS=1
     start imsdatadaemon
