@@ -207,3 +207,7 @@ ifneq ($(TARGET_USES_AOSP),true)
 endif
 
 BOARD_HAL_STATIC_LIBRARIES := libhealthd.msm
+
+ifeq ($(strip $(TARGET_KERNEL_VERSION)), 4.9)
+PMIC_QG_SUPPORT := true
+endif
