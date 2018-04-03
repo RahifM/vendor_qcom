@@ -1,5 +1,5 @@
 TARGET_USES_AOSP := true
-TARGET_USES_AOSP_FOR_AUDIO := false
+TARGET_USES_AOSP_FOR_AUDIO := true
 TARGET_USES_QCOM_BSP := false
 
 ifeq ($(TARGET_USES_AOSP),true)
@@ -8,7 +8,7 @@ endif
 
 DEVICE_PACKAGE_OVERLAYS := device/qcom/msm8953_32/overlay
 BOARD_HAVE_QCOM_FM := true
-TARGET_USES_NQ_NFC := true
+TARGET_USES_NQ_NFC := false
 TARGET_KERNEL_VERSION := 3.18
 
 TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
@@ -303,3 +303,5 @@ PRODUCT_PACKAGES += update_engine \
 #Boot control HAL test app
 PRODUCT_PACKAGES_DEBUG += bootctl
 endif
+
+SDM660_DISABLE_MODULE := true
