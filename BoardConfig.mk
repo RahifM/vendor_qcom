@@ -20,8 +20,13 @@
 ifeq ($(TARGET_ARCH),)
 TARGET_ARCH := arm
 endif
-TARGET_KERNEL_CROSS_COMPILE_PREFIX := arm-linux-androideabi-
-
+ifneq ($(wildcard kernel/msm-3.18),)
+    TARGET_KERNEL_CROSS_COMPILE_PREFIX := $(PWD)/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8/bin/arm-eabi-
+else ifneq ($(wildcard kernel/msm-4.9),)
+    TARGET_KERNEL_CROSS_COMPILE_PREFIX := arm-linux-androidkernel-
+else
+    $(warning "Unknown kernel")
+endif
 BOARD_USES_GENERIC_AUDIO := true
 
 -include $(QCPATH)/common/msm8953_32/BoardConfigVendor.mk
@@ -38,6 +43,7 @@ TARGET_NO_RADIOIMAGE := true
 TARGET_NO_RPC := true
 BOOTLOADER_GCC_VERSION := arm-eabi-4.8
 BOOTLOADER_PLATFORM := msm8953# use msm8953 LK configuration
+TARGET_KERNEL_ARCH := arm
 
 # Enables CSVT
 TARGET_USES_CSVT := true
@@ -95,28 +101,47 @@ BOARD_CACHEIMAGE_PARTITION_SIZE := 268435456
 #TARGET_RECOVERY_UPDATER_LIBS += librecovery_updater_msm
 endif
 
-ifeq ($(ENABLE_AB),true)
-  ifeq ($(ENABLE_VENDOR_IMAGE), true)
-    TARGET_RECOVERY_FSTAB := device/qcom/msm8953_32/recovery_AB_split_variant.fstab
-  else
-    TARGET_RECOVERY_FSTAB := device/qcom/msm8953_32/recovery_AB_non-split_variant.fstab
-  endif
+ifneq ($(wildcard kernel/msm-3.18),)
+    ifeq ($(ENABLE_AB),true)
+      ifeq ($(ENABLE_VENDOR_IMAGE), true)
+        TARGET_RECOVERY_FSTAB := device/qcom/msm8953_32/fstabs-3.18/recovery_AB_split_variant.fstab
+      else
+        TARGET_RECOVERY_FSTAB := device/qcom/msm8953_32/fstabs-3.18/recovery_AB_non-split_variant.fstab
+      endif
+    else
+      ifeq ($(ENABLE_VENDOR_IMAGE), true)
+        TARGET_RECOVERY_FSTAB := device/qcom/msm8953_32/fstabs-3.18/recovery_non-AB_split_variant.fstab
+      else
+        TARGET_RECOVERY_FSTAB := device/qcom/msm8953_32/fstabs-3.18/recovery_non-AB_non-split_variant.fstab
+      endif
+    endif
+else ifneq ($(wildcard kernel/msm-4.9),)
+    ifeq ($(ENABLE_AB),true)
+      ifeq ($(ENABLE_VENDOR_IMAGE), true)
+        TARGET_RECOVERY_FSTAB := device/qcom/msm8953_32/fstabs-4.9/recovery_AB_split_variant.fstab
+      else
+        TARGET_RECOVERY_FSTAB := device/qcom/msm8953_32/fstabs-4.9/recovery_AB_non-split_variant.fstab
+      endif
+    else
+      ifeq ($(ENABLE_VENDOR_IMAGE), true)
+        TARGET_RECOVERY_FSTAB := device/qcom/msm8953_32/fstabs-4.9/recovery_non-AB_split_variant.fstab
+      else
+        TARGET_RECOVERY_FSTAB := device/qcom/msm8953_32/fstabs-4.9/recovery_non-AB_non-split_variant.fstab
+      endif
+    endif
 else
-  ifeq ($(ENABLE_VENDOR_IMAGE), true)
-    TARGET_RECOVERY_FSTAB := device/qcom/msm8953_32/recovery_non-AB_split_variant.fstab
-  else
-    TARGET_RECOVERY_FSTAB := device/qcom/msm8953_32/recovery_non-AB_non-split_variant.fstab
-  endif
-
+    $(warning "Unknown fstab")
 endif
 
 TARGET_USERIMAGES_USE_EXT4 := true
 BOARD_PERSISTIMAGE_FILE_SYSTEM_TYPE := ext4
 #TARGET_USES_AOSP := true
 ifeq ($(strip $(TARGET_KERNEL_VERSION)), 4.9)
-BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=qcom user_debug=30 msm_rtb.filter=0x237 ehci-hcd.park=3 androidboot.bootdevice=7824900.sdhci lpm_levels.sleep_disabled=1 earlycon=msm_hsl_uart,0x78af000 androidboot.selinux=permissive firmware_class.path=/vendor/firmware_mnt/image androidboot.usbconfigfs=true
+BOARD_KERNEL_CMDLINE := console=ttyMSM0,115200,n8 androidboot.console=ttyMSM0 androidboot.hardware=qcom user_debug=30 msm_rtb.filter=0x237 ehci-hcd.park=3 androidboot.bootdevice=7824900.sdhci lpm_levels.sleep_disabled=1 earlycon=msm_hsl_uart,0x78af000 androidboot.selinux=permissive firmware_class.path=/vendor/firmware_mnt/image androidboot.usbconfigfs=true vmalloc=300M
 else ifeq ($(strip $(TARGET_KERNEL_VERSION)), 3.18)
 BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=qcom user_debug=30 msm_rtb.filter=0x237 ehci-hcd.park=3 androidboot.bootdevice=7824900.sdhci lpm_levels.sleep_disabled=1 earlycon=msm_hsl_uart,0x78af000 firmware_class.path=/vendor/firmware_mnt/image
+else
+    $(warning "Unknown cmdline")
 endif
 #BOARD_KERNEL_SEPARATED_DT := true
 
@@ -130,6 +155,10 @@ BOARD_USERDATAIMAGE_PARTITION_SIZE := 3112173568
 BOARD_PERSISTIMAGE_PARTITION_SIZE := 33554432
 BOARD_OEMIMAGE_PARTITION_SIZE := 268435456
 BOARD_FLASH_BLOCK_SIZE := 131072 # (BOARD_KERNEL_PAGESIZE * 64)
+
+ifeq ($(TARGET_KERNEL_VERSION), 4.9)
+BOARD_DTBOIMG_PARTITION_SIZE := 0x0800000
+endif
 
 ifeq ($(ENABLE_VENDOR_IMAGE), true)
 BOARD_VENDORIMAGE_PARTITION_SIZE := 1073741824
@@ -152,34 +181,6 @@ BOARD_CHARGER_DISABLE_INIT_BLANK := true
 # Add NON-HLOS files for ota upgrade
 ADD_RADIO_FILES ?= true
 
-ifeq ($(TARGET_KERNEL_VERSION), 4.9)
-BOARD_VENDOR_KERNEL_MODULES := \
-        $(KERNEL_MODULES_OUT)/audio_apr.ko \
-        $(KERNEL_MODULES_OUT)/audio_wglink.ko \
-        $(KERNEL_MODULES_OUT)/pronto_wlan.ko \
-        $(KERNEL_MODULES_OUT)/audio_q6_notifier.ko \
-        $(KERNEL_MODULES_OUT)/audio_adsp_loader.ko \
-        $(KERNEL_MODULES_OUT)/audio_q6.ko \
-        $(KERNEL_MODULES_OUT)/audio_usf.ko \
-        $(KERNEL_MODULES_OUT)/audio_pinctrl_wcd.ko \
-        $(KERNEL_MODULES_OUT)/audio_swr.ko \
-        $(KERNEL_MODULES_OUT)/audio_wcd_core.ko \
-        $(KERNEL_MODULES_OUT)/audio_swr_ctrl.ko \
-        $(KERNEL_MODULES_OUT)/audio_wsa881x.ko \
-        $(KERNEL_MODULES_OUT)/audio_wsa881x_analog.ko \
-        $(KERNEL_MODULES_OUT)/audio_platform.ko \
-        $(KERNEL_MODULES_OUT)/audio_hdmi.ko \
-        $(KERNEL_MODULES_OUT)/audio_stub.ko \
-        $(KERNEL_MODULES_OUT)/audio_wcd9xxx.ko \
-        $(KERNEL_MODULES_OUT)/audio_mbhc.ko \
-        $(KERNEL_MODULES_OUT)/audio_wcd9335.ko \
-        $(KERNEL_MODULES_OUT)/audio_wcd_cpe.ko \
-        $(KERNEL_MODULES_OUT)/audio_digital_cdc.ko \
-        $(KERNEL_MODULES_OUT)/audio_analog_cdc.ko \
-        $(KERNEL_MODULES_OUT)/audio_native.ko \
-        $(KERNEL_MODULES_OUT)/audio_machine_sdm450.ko
-endif
-
 # Added to indicate that protobuf-c is supported in this build
 PROTOBUF_SUPPORTED := false
 TARGET_USES_ION := true
@@ -189,6 +190,34 @@ TARGET_USES_HWC2 := true
 TARGET_USES_GRALLOC1 := true
 TARGET_USES_COLOR_METADATA := true
 
+ifeq ($(TARGET_KERNEL_VERSION), 4.9)
+BOARD_VENDOR_KERNEL_MODULES := \
+    $(KERNEL_MODULES_OUT)/audio_apr.ko \
+    $(KERNEL_MODULES_OUT)/pronto_wlan.ko \
+    $(KERNEL_MODULES_OUT)/audio_q6_notifier.ko \
+    $(KERNEL_MODULES_OUT)/audio_adsp_loader.ko \
+    $(KERNEL_MODULES_OUT)/audio_q6.ko \
+    $(KERNEL_MODULES_OUT)/audio_usf.ko \
+    $(KERNEL_MODULES_OUT)/audio_pinctrl_wcd.ko \
+    $(KERNEL_MODULES_OUT)/audio_swr.ko \
+    $(KERNEL_MODULES_OUT)/audio_wcd_core.ko \
+    $(KERNEL_MODULES_OUT)/audio_swr_ctrl.ko \
+    $(KERNEL_MODULES_OUT)/audio_wsa881x.ko \
+    $(KERNEL_MODULES_OUT)/audio_wsa881x_analog.ko \
+    $(KERNEL_MODULES_OUT)/audio_platform.ko \
+    $(KERNEL_MODULES_OUT)/audio_cpe_lsm.ko \
+    $(KERNEL_MODULES_OUT)/audio_hdmi.ko \
+    $(KERNEL_MODULES_OUT)/audio_stub.ko \
+    $(KERNEL_MODULES_OUT)/audio_wcd9xxx.ko \
+    $(KERNEL_MODULES_OUT)/audio_mbhc.ko \
+    $(KERNEL_MODULES_OUT)/audio_wcd9335.ko \
+    $(KERNEL_MODULES_OUT)/audio_wcd_cpe.ko \
+    $(KERNEL_MODULES_OUT)/audio_digital_cdc.ko \
+    $(KERNEL_MODULES_OUT)/audio_analog_cdc.ko \
+    $(KERNEL_MODULES_OUT)/audio_native.ko \
+    $(KERNEL_MODULES_OUT)/audio_machine_sdm450.ko \
+    $(KERNEL_MODULES_OUT)/audio_machine_ext_sdm450.ko
+endif
 #TARGET_RECOVERY_UPDATER_LIBS := librecovery_updater_msm
 TARGET_INIT_VENDOR_LIB := libinit_msm
 TARGET_PLATFORM_DEVICE_BASE := /devices/soc.0/
@@ -236,4 +265,8 @@ BOARD_HAL_STATIC_LIBRARIES := libhealthd.msm
 
 ifeq ($(strip $(TARGET_KERNEL_VERSION)), 4.9)
 PMIC_QG_SUPPORT := true
+endif
+#Generate DTBO image
+ifeq ($(TARGET_KERNEL_VERSION), 4.9)
+BOARD_KERNEL_SEPARATED_DTBO := true
 endif

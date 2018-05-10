@@ -1,4 +1,10 @@
 ALLOW_MISSING_DEPENDENCIES=true
+
+# Enable AVB 2.0
+ifneq ($(wildcard kernel/msm-4.9),)
+BOARD_AVB_ENABLE := true
+endif
+
 TARGET_USES_AOSP := true
 TARGET_USES_AOSP_FOR_AUDIO := false
 TARGET_USES_QCOM_BSP := false
@@ -41,7 +47,7 @@ ENABLE_AB ?= false
 # Enable features in video HAL that can compile only on this platform
 TARGET_USES_MEDIA_EXTENSIONS := true
 
-include $(QCPATH)/common/config/qtic-config.mk
+-include $(QCPATH)/common/config/qtic-config.mk
 
 # media_profiles and media_codecs xmls for msm8953
 ifeq ($(TARGET_ENABLE_QC_AV_ENHANCEMENTS), true)
@@ -247,13 +253,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
      device/qcom/msm8953_32/sensors/hals.conf:$(TARGET_COPY_OUT_VENDOR)/etc/sensors/hals.conf
 
-# Disable Verity boot feature
-PRODUCT_SUPPORTS_VERITY := true
-PRODUCT_SYSTEM_VERITY_PARTITION := /dev/block/bootdevice/by-name/system
-ifeq ($(ENABLE_VENDOR_IMAGE), true)
-PRODUCT_VENDOR_VERITY_PARTITION := /dev/block/bootdevice/by-name/vendor
-endif
-
 # Enable logdumpd service only for non-perf bootimage
 ifeq ($(findstring perf,$(KERNEL_DEFCONFIG)),)
     ifeq ($(TARGET_BUILD_VARIANT),user)
@@ -314,3 +313,10 @@ PRODUCT_PACKAGES_DEBUG += bootctl
 endif
 
 SDM660_DISABLE_MODULE := true
+
+# When AVB 2.0 is enabled, dm-verity is enabled differently,
+# below definitions are only required for AVB 1.0
+ifeq ($(BOARD_AVB_ENABLE),false)
+# dm-verity definitions
+  PRODUCT_SUPPORTS_VERITY := true
+endif
