@@ -33,6 +33,7 @@ endif
 #----------------------------------------------------------------------
 # Compile Linux Kernel
 #----------------------------------------------------------------------
+
 ifeq ($(KERNEL_DEFCONFIG),)
     ifneq ($(wildcard kernel/msm-3.18),)
         ifeq ($(TARGET_BUILD_VARIANT),user)
@@ -40,7 +41,7 @@ ifeq ($(KERNEL_DEFCONFIG),)
         else
           KERNEL_DEFCONFIG := msmcortex_defconfig
         endif
-     else ifneq ($(wildcard kernel/msm-4.9),)
+    else ifneq ($(wildcard kernel/msm-4.9),)
         ifeq ($(TARGET_BUILD_VARIANT),user)
           KERNEL_DEFCONFIG := msm8953-perf_defconfig
         else
