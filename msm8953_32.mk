@@ -8,9 +8,17 @@ TARGET_DISABLE_DASH := true
 endif
 
 DEVICE_PACKAGE_OVERLAYS := device/qcom/msm8953_32/overlay
-BOARD_HAVE_QCOM_FM := true
 TARGET_USES_NQ_NFC := false
-TARGET_KERNEL_VERSION := 3.18
+
+ifneq ($(wildcard kernel/msm-3.18),)
+    TARGET_KERNEL_VERSION := 3.18
+    $(warning "Build with 3.18 kernel.")
+else ifneq ($(wildcard kernel/msm-4.9),)
+    TARGET_KERNEL_VERSION := 4.9
+    $(warning "Build with 4.9 kernel")
+else
+    $(warning "Unknown kernel")
+endif
 
 TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
 
@@ -89,8 +97,6 @@ PRODUCT_PACKAGES += \
 
 #PRODUCT_BOOT_JARS += vcard \
                      com.qti.dpmframework
-PRODUCT_BOOT_JARS += qcom.fmradio
-
 DEVICE_MANIFEST_FILE := device/qcom/msm8953_32/manifest.xml
 DEVICE_MATRIX_FILE   := device/qcom/common/compatibility_matrix.xml
 
