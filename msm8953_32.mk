@@ -182,6 +182,9 @@ PRODUCT_COPY_FILES += \
 # MIDI feature
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.software.midi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.midi.xml
+# VB xml
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.software.verified_boot.xml:system/etc/permissions/android.software.verified_boot.xml
 
 #fstab.qcom
 PRODUCT_PACKAGES += fstab.qcom
