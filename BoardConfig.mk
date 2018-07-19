@@ -235,7 +235,7 @@ TARGET_BOARD_SUFFIX := _32
 #Enable HW based full disk encryption
 TARGET_HW_DISK_ENCRYPTION := true
 
-TARGET_CRYPTFS_HW_PATH := device/qcom/common/cryptfs_hw
+TARGET_HW_DISK_ENCRYPTION_PERF := false
 
 # Enable sensor multi HAL
 USE_SENSOR_MULTI_HAL := true
