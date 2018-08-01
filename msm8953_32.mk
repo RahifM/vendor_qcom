@@ -112,6 +112,7 @@ PRODUCT_PACKAGES += \
                      com.qti.dpmframework
 DEVICE_MANIFEST_FILE := device/qcom/msm8953_32/manifest.xml
 DEVICE_MATRIX_FILE   := device/qcom/common/compatibility_matrix.xml
+DEVICE_FRAMEWORK_MANIFEST_FILE := device/qcom/msm8953_32/framework_manifest.xml
 
 
 ifneq ($(strip $(QCPATH)),)
