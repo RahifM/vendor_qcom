@@ -369,6 +369,8 @@ PRODUCT_PACKAGES += update_engine \
 PRODUCT_PACKAGES_DEBUG += bootctl
 endif
 
+TARGET_MOUNT_POINTS_SYMLINKS := false
+
 SDM660_DISABLE_MODULE := true
 
 # When AVB 2.0 is enabled, dm-verity is enabled differently,
