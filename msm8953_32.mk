@@ -351,6 +351,7 @@ else
 endif
 
 PRODUCT_PROPERTY_OVERRIDES += rild.libpath=/system/vendor/lib/libril-qc-qmi-1.so
+PRODUCT_PROPERTY_OVERRIDES += vendor.rild.libpath=/system/vendor/lib/libril-qc-qmi-1.so
 
 ifeq ($(ENABLE_AB),true)
 #A/B related packages
