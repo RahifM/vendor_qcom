@@ -98,7 +98,9 @@ else
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 0x02000000
 BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_CACHEIMAGE_PARTITION_SIZE := 268435456
-#TARGET_RECOVERY_UPDATER_LIBS += librecovery_updater_msm
+TARGET_RECOVERY_UPDATER_LIBS += librecovery_updater_msm
+# Enable System As Root even for non-A/B from P onwards
+BOARD_BUILD_SYSTEM_ROOT_IMAGE := true
 endif
 
 ifneq ($(wildcard kernel/msm-3.18),)
@@ -137,7 +139,7 @@ TARGET_USERIMAGES_USE_EXT4 := true
 BOARD_PERSISTIMAGE_FILE_SYSTEM_TYPE := ext4
 #TARGET_USES_AOSP := true
 ifeq ($(strip $(TARGET_KERNEL_VERSION)), 4.9)
-BOARD_KERNEL_CMDLINE := console=ttyMSM0,115200,n8 androidboot.console=ttyMSM0 androidboot.hardware=qcom user_debug=30 msm_rtb.filter=0x237 ehci-hcd.park=3 androidboot.bootdevice=7824900.sdhci lpm_levels.sleep_disabled=1 earlycon=msm_hsl_uart,0x78af000 androidboot.selinux=permissive firmware_class.path=/vendor/firmware_mnt/image androidboot.usbconfigfs=true vmalloc=300M
+BOARD_KERNEL_CMDLINE := console=ttyMSM0,115200,n8 androidboot.console=ttyMSM0 androidboot.hardware=qcom user_debug=30 msm_rtb.filter=0x237 ehci-hcd.park=3 androidboot.bootdevice=7824900.sdhci lpm_levels.sleep_disabled=1 earlycon=msm_hsl_uart,0x78af000 firmware_class.path=/vendor/firmware_mnt/image androidboot.usbconfigfs=true vmalloc=300M
 else ifeq ($(strip $(TARGET_KERNEL_VERSION)), 3.18)
 BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=qcom user_debug=30 msm_rtb.filter=0x237 ehci-hcd.park=3 androidboot.bootdevice=7824900.sdhci lpm_levels.sleep_disabled=1 earlycon=msm_hsl_uart,0x78af000 firmware_class.path=/vendor/firmware_mnt/image
 else
@@ -235,7 +237,7 @@ TARGET_BOARD_SUFFIX := _32
 #Enable HW based full disk encryption
 TARGET_HW_DISK_ENCRYPTION := true
 
-TARGET_CRYPTFS_HW_PATH := device/qcom/common/cryptfs_hw
+TARGET_HW_DISK_ENCRYPTION_PERF := false
 
 # Enable sensor multi HAL
 USE_SENSOR_MULTI_HAL := true
@@ -269,4 +271,6 @@ endif
 #Generate DTBO image
 ifeq ($(TARGET_KERNEL_VERSION), 4.9)
 BOARD_KERNEL_SEPARATED_DTBO := true
+BOARD_SYSTEMSDK_VERSIONS :=28
+BOARD_VNDK_VERSION := current
 endif
