@@ -5,7 +5,7 @@ ifneq ($(wildcard kernel/msm-4.9),)
 BOARD_AVB_ENABLE := true
 endif
 
-TARGET_USES_AOSP := true
+TARGET_USES_AOSP := false
 TARGET_USES_AOSP_FOR_AUDIO := false
 TARGET_USES_QCOM_BSP := false
 
@@ -75,7 +75,9 @@ PRODUCT_COPY_FILES += device/qcom/msm8953_32/whitelistedapps.xml:system/etc/whit
 
 PRODUCT_PROPERTY_OVERRIDES += \
        dalvik.vm.heapminfree=6m \
-       dalvik.vm.heapstartsize=14m
+       dalvik.vm.heapstartsize=14m \
+       vendor.mediacodec.binder.size=2
+
 $(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
 $(call inherit-product, device/qcom/common/common.mk)
 
@@ -113,7 +115,8 @@ PRODUCT_PACKAGES += \
 DEVICE_MANIFEST_FILE := device/qcom/msm8953_32/manifest.xml
 DEVICE_MATRIX_FILE   := device/qcom/common/compatibility_matrix.xml
 DEVICE_FRAMEWORK_MANIFEST_FILE := device/qcom/msm8953_32/framework_manifest.xml
-
+DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := \
+    device/qcom/common/vendor_framework_compatibility_matrix.xml
 
 ifneq ($(strip $(QCPATH)),)
     PRODUCT_BOOT_JARS += WfdCommon
@@ -242,7 +245,7 @@ PRODUCT_COPY_FILES += \
     device/qcom/msm8953_32/WCNSS_wlan_dictionary.dat:persist/WCNSS_wlan_dictionary.dat
 
 ifneq ($(TARGET_DISABLE_DASH), true)
-    PRODUCT_BOOT_JARS += qcmediaplayer
+#    PRODUCT_BOOT_JARS += qcmediaplayer
 endif
 
 PRODUCT_PACKAGES += \
@@ -379,4 +382,6 @@ ifeq ($(strip $(TARGET_KERNEL_VERSION)), 4.9)
     # Enable vndk-sp Libraries
     PRODUCT_PACKAGES += vndk_package
     PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE := true
+    TARGET_USES_MKE2FS := true
+    $(call inherit-product, build/make/target/product/product_launched_with_p.mk)
 endif
