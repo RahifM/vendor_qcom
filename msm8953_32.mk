@@ -77,7 +77,7 @@ PRODUCT_COPY_FILES += device/qcom/msm8953_32/whitelistedapps.xml:system/etc/whit
 PRODUCT_PROPERTY_OVERRIDES += \
        dalvik.vm.heapminfree=6m \
        dalvik.vm.heapstartsize=14m \
-       vendor.mediacodec.binder.size=2
+       vendor.mediacodec.binder.size=6
 
 $(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
 $(call inherit-product, device/qcom/common/common.mk)
