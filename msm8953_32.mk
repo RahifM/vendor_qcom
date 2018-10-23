@@ -85,6 +85,9 @@ $(call inherit-product, device/qcom/common/common.mk)
 PRODUCT_NAME := msm8953_32
 PRODUCT_DEVICE := msm8953_32
 
+# Disable Vulkan feature level 1
+TARGET_NOT_SUPPORT_VULKAN_FEATURE_LEVEL_1 := true
+
 # Kernel modules install path
 KERNEL_MODULES_INSTALL := dlkm
 KERNEL_MODULES_OUT := out/target/product/$(PRODUCT_NAME)/$(KERNEL_MODULES_INSTALL)/lib/modules
