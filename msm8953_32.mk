@@ -76,9 +76,6 @@ PRODUCT_COPY_FILES += \
     device/qcom/msm8953_32/media/media_codecs_vendor_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_vendor_audio.xml
 endif  #TARGET_ENABLE_QC_AV_ENHANCEMENTS
 
-PRODUCT_COPY_FILES += device/qcom/msm8953_32/whitelistedapps.xml:system/etc/whitelistedapps.xml \
-                      device/qcom/msm8953_32/gamedwhitelist.xml:system/etc/gamedwhitelist.xml
-
 PRODUCT_PROPERTY_OVERRIDES += \
        dalvik.vm.heapminfree=6m \
        dalvik.vm.heapstartsize=14m \
