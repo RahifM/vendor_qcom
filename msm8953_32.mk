@@ -3,6 +3,11 @@ ALLOW_MISSING_DEPENDENCIES=true
 # Enable AVB 2.0
 ifneq ($(wildcard kernel/msm-4.9),)
 BOARD_AVB_ENABLE := true
+# Enable chain partition for system, to facilitate system-only OTA in Treble.
+BOARD_AVB_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
+BOARD_AVB_SYSTEM_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_SYSTEM_ROLLBACK_INDEX := 0
+BOARD_AVB_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
 endif
 
 TARGET_USES_AOSP := false
@@ -71,9 +76,6 @@ PRODUCT_COPY_FILES += \
     device/qcom/msm8953_32/media/media_codecs_vendor_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_vendor_audio.xml
 endif  #TARGET_ENABLE_QC_AV_ENHANCEMENTS
 
-PRODUCT_COPY_FILES += device/qcom/msm8953_32/whitelistedapps.xml:system/etc/whitelistedapps.xml \
-                      device/qcom/msm8953_32/gamedwhitelist.xml:system/etc/gamedwhitelist.xml
-
 PRODUCT_PROPERTY_OVERRIDES += \
        dalvik.vm.heapminfree=6m \
        dalvik.vm.heapstartsize=14m \
@@ -84,6 +86,9 @@ $(call inherit-product, device/qcom/common/common.mk)
 
 PRODUCT_NAME := msm8953_32
 PRODUCT_DEVICE := msm8953_32
+
+# Disable Vulkan feature level 1
+TARGET_NOT_SUPPORT_VULKAN_FEATURE_LEVEL_1 := true
 
 # Kernel modules install path
 KERNEL_MODULES_INSTALL := dlkm
@@ -302,20 +307,6 @@ PRODUCT_PACKAGES += \
 # Sensor HAL conf file
 PRODUCT_COPY_FILES += \
      device/qcom/msm8953_32/sensors/hals.conf:$(TARGET_COPY_OUT_VENDOR)/etc/sensors/hals.conf
-
-# Enable logdumpd service only for non-perf bootimage
-ifeq ($(findstring perf,$(KERNEL_DEFCONFIG)),)
-    ifeq ($(TARGET_BUILD_VARIANT),user)
-        PRODUCT_DEFAULT_PROPERTY_OVERRIDES+= \
-            ro.logdumpd.enabled=0
-    else
-        #PRODUCT_DEFAULT_PROPERTY_OVERRIDES+= \
-            ro.logdumpd.enabled=1
-    endif
-else
-    PRODUCT_DEFAULT_PROPERTY_OVERRIDES+= \
-        ro.logdumpd.enabled=0
-endif
 
 PRODUCT_PACKAGES += \
     vendor.display.color@1.0-service \
